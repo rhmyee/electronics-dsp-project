@@ -15,27 +15,48 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+
+name: Build and Push Docker Image
+
+# Trigger this workflow when code is pushed to the 'main' branch
+on:
+  push:
+    branches: [ main ]
+
+# Define the job that will run
+jobs:
+  build_and_push:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-          
-# Step 5: Run the newly built image to test it
-  - name: Run and test container
-    run: docker run rhmyee/dsp-processor:latest
-    
+      # Step 2: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: rhmyee 
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 3: Extract the image tag
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # Use the latest tag for continuous deployment
+          images: rhmyee/dsp-processor:latest 
+
+      # Step 4: Build and Push the Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # Step 5: Run the newly built image to test it (CD)
+      - name: Run and test container
+        run: docker run rhmyee/dsp-processor:latest
