@@ -34,3 +34,8 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
+          
+# Step 5: Run the newly built image to test it
+  - name: Run and test container
+    run: docker run rhmyee/dsp-processor:latest
+    
