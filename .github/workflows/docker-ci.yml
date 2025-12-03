@@ -1,0 +1,43 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: rhmyee 
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Step 3: Extract the image tag
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # REMOVE :latest from this line
+          images: rhmyee/dsp-processor
+
+      # Step 4: Build and Push the Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          # Manually set the tag to prevent the :main suffix
+          tags: rhmyee/dsp-processor:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
+      # Step 5: Run the newly built image to test it (CD)
+      - name: Run and test container
+        run: docker run rhmyee/dsp-processor:latest
