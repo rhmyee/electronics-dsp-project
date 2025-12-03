@@ -25,8 +25,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # Use the latest tag for continuous deployment
-          images: rhmyee/dsp-processor:latest 
+          # REMOVE :latest from this line
+          images: rhmyee/dsp-processor
 
       # Step 4: Build and Push the Docker image
       - name: Build and push Docker image
@@ -34,7 +34,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: rhmyee/dsp-processor:latest
           labels: ${{ steps.meta.outputs.labels }}
 
       # Step 5: Run the newly built image to test it (CD)
