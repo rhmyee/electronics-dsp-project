@@ -1,6 +1,6 @@
 # dsp.py - A simple Python script for the Docker container
 
-print("--- DSP Analysis Start ---")
+print("--- DSP Analysis Start: CI/CD Test Successful ---")
 
 # Simulate a simple frequency calculation (e.g., Fourier component)
 frequency = 440.0 # A4 note
