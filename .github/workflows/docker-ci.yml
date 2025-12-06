@@ -38,4 +38,6 @@ jobs:
 
       # Step 5: Run Pytest Unit Tests inside the container (The new test step!)
       - name: Run Pytest Unit Tests
-        run: docker run rhmyee/dsp-processor:latest python -m pytest
+        # Use 'docker run' and pass the pytest command directly to the container's entrypoint
+        run: docker run rhmyee/dsp-processor:latest pytest
+
