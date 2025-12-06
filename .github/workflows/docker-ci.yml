@@ -20,24 +20,22 @@ jobs:
           username: rhmyee 
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Step 3: Extract the image tag
+      # Step 3: Extract the image tag (Simplified)
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # REMOVE :latest from this line
-          images: rhmyee/dsp-processor
+          images: rhmyee/dsp-processor 
 
-      # Step 4: Build and Push the Docker image
+      # Step 4: Build and Push the Docker image (Installs dependencies via requirements.txt)
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          # Manually set the tag to prevent the :main suffix
           tags: rhmyee/dsp-processor:latest
           labels: ${{ steps.meta.outputs.labels }}
 
-      # Step 5: Run the newly built image to test it (CD)
-      - name: Run and test container
-        run: docker run rhmyee/dsp-processor:latest
+      # Step 5: Run Pytest Unit Tests inside the container (The new test step!)
+      - name: Run Pytest Unit Tests
+        run: docker run rhmyee/dsp-processor:latest python -m pytest
